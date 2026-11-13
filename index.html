@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover" />
   <title>The House Apothecary &amp; Evening Bar Ledger</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -63,6 +63,7 @@
       align-items: center;
       justify-content: center;
       position: relative;
+      touch-action: none;
     }
 
     /* Ambient Candlelit Table Vignette */
@@ -89,66 +90,7 @@
     .font-garamond { font-family: 'EB Garamond', Georgia, serif; }
 
     /* =======================================================================
-       PORTRAIT ORIENTATION PROMPT OVERLAY (MOBILE PHONES IN PORTRAIT)
-       ======================================================================= */
-    #portraitOverlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      z-index: 100;
-      background:
-        radial-gradient(circle at 50% 42%, rgba(118, 31, 28, 0.34) 0%, rgba(10, 5, 3, 0.96) 78%);
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
-      padding: 24px;
-      align-items: center;
-      justify-content: center;
-    }
-
-    @media (max-width: 767px) and (orientation: portrait) {
-      #portraitOverlay:not(.dismissed) {
-        display: flex;
-      }
-    }
-
-    .portrait-card {
-      width: 100%;
-      max-width: 340px;
-      border-radius: 16px;
-      padding: 28px 24px;
-      text-align: center;
-      background:
-        radial-gradient(circle at 50% 0%, rgba(223, 186, 107, 0.14), transparent 65%),
-        linear-gradient(155deg, #2b1712 0%, #170b08 100%);
-      border: 2px solid var(--brass);
-      box-shadow:
-        0 26px 60px rgba(0, 0, 0, 0.92),
-        inset 0 0 0 4px rgba(181, 141, 61, 0.18);
-      position: relative;
-    }
-
-    .portrait-card-inner {
-      border: 2px double rgba(223, 186, 107, 0.65);
-      border-radius: 10px;
-      padding: 22px 18px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .rotate-phone-anim {
-      animation: tiltPhoneLandscape 2.4s ease-in-out infinite;
-      transform-origin: center center;
-    }
-
-    @keyframes tiltPhoneLandscape {
-      0%, 15% { transform: rotate(0deg); }
-      45%, 75% { transform: rotate(-90deg); }
-      95%, 100% { transform: rotate(0deg); }
-    }
-
-    /* =======================================================================
-       FLUID HORIZONTAL BOOK VIEWPORT STAGE
+       FLUID HORIZONTAL BOOK VIEWPORT STAGE & ZOOM WRAPPER
        ======================================================================= */
     #viewportStage {
       width: 100%;
@@ -160,6 +102,140 @@
       position: relative;
       z-index: 2;
       perspective: 2600px;
+      touch-action: none;
+      overflow: hidden;
+    }
+
+    #bookZoomWrapper {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transform-origin: center center;
+      will-change: transform;
+      touch-action: none;
+    }
+
+    #bookZoomWrapper.zoom-smooth {
+      transition: transform 0.28s cubic-bezier(0.22, 0.85, 0.28, 1);
+    }
+
+    /* =======================================================================
+       VINTAGE BRASS FULL-SCREEN BUTTON, ZOOM RESET PILL & IOS TOAST
+       ======================================================================= */
+    #fullscreenBtn {
+      position: fixed;
+      top: max(8px, calc(env(safe-area-inset-top, 0px) + 6px));
+      right: max(10px, calc(env(safe-area-inset-right, 0px) + 8px));
+      z-index: 80;
+      background: linear-gradient(180deg, #351d14 0%, #1b0d09 100%);
+      border: 1.5px solid rgba(223, 186, 107, 0.68);
+      color: var(--brass-bright);
+      font-family: 'Cinzel', Georgia, serif;
+      font-size: clamp(9px, 1.2vh, 11.5px);
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      padding: 4px 11px;
+      border-radius: 999px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      box-shadow:
+        0 4px 14px rgba(0, 0, 0, 0.82),
+        inset 0 1px 1px rgba(255, 232, 180, 0.24);
+      transition: transform 0.18s ease, border-color 0.2s ease, background 0.2s ease;
+    }
+
+    #fullscreenBtn:hover {
+      border-color: #f5dc9b;
+      transform: translateY(-1px);
+    }
+
+    #fullscreenBtn:active {
+      transform: scale(0.96);
+    }
+
+    #resetZoomBtn {
+      position: fixed;
+      top: max(8px, calc(env(safe-area-inset-top, 0px) + 6px));
+      left: max(10px, calc(env(safe-area-inset-left, 0px) + 8px));
+      z-index: 80;
+      background: linear-gradient(180deg, #6e1e23 0%, #3d0f12 100%);
+      border: 1.5px solid rgba(223, 186, 107, 0.78);
+      color: #f7eedc;
+      font-family: 'Cinzel', Georgia, serif;
+      font-size: clamp(9px, 1.2vh, 11.5px);
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      padding: 4px 12px;
+      border-radius: 999px;
+      cursor: pointer;
+      display: none;
+      align-items: center;
+      gap: 5px;
+      box-shadow:
+        0 4px 14px rgba(0, 0, 0, 0.85),
+        inset 0 1px 1px rgba(255, 224, 166, 0.28);
+      transition: opacity 0.2s ease, transform 0.18s ease;
+    }
+
+    #resetZoomBtn.visible {
+      display: inline-flex;
+    }
+
+    #resetZoomBtn:active {
+      transform: scale(0.96);
+    }
+
+    /* Vintage Parchment Toast for iOS Safari Full-Screen Tip */
+    #iosFullscreenToast {
+      position: fixed;
+      bottom: max(14px, calc(env(safe-area-inset-bottom, 0px) + 12px));
+      left: 50%;
+      transform: translateX(-50%) translateY(130%);
+      z-index: 95;
+      width: min(92vw, 460px);
+      background:
+        radial-gradient(circle at 0% 0%, rgba(181, 141, 61, 0.16), transparent 45%),
+        linear-gradient(180deg, #f7efe0 0%, #eadbc0 100%);
+      border: 2px solid var(--crimson);
+      box-shadow:
+        0 14px 36px rgba(0, 0, 0, 0.88),
+        inset 0 0 0 2px rgba(181, 141, 61, 0.45);
+      border-radius: 10px;
+      padding: 9px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      color: var(--espresso);
+      opacity: 0;
+      pointer-events: none;
+      transition: transform 0.34s cubic-bezier(0.22, 0.85, 0.28, 1), opacity 0.28s ease;
+    }
+
+    #iosFullscreenToast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    #closeToastBtn {
+      flex-shrink: 0;
+      width: 24px;
+      height: 24px;
+      border-radius: 999px;
+      border: 1px solid rgba(118, 31, 28, 0.4);
+      background: rgba(118, 31, 28, 0.08);
+      color: var(--crimson);
+      font-size: 12px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
     }
 
     /* =======================================================================
@@ -1085,6 +1161,21 @@
 
   <div id="viewportStage">
 
+    <!-- Top-Left Zoom Reset Pill (Appears when zoomed in > 1.05x) -->
+    <button id="resetZoomBtn" type="button" aria-label="Reset Zoom to 1x">
+      <span>🔍</span>
+      <span>1&times; Reset Zoom</span>
+    </button>
+
+    <!-- Top-Right Brass Full-Screen Toggle Button -->
+    <button id="fullscreenBtn" type="button" aria-label="Toggle Full Screen Mode">
+      <span id="fullscreenIcon">⛶</span>
+      <span id="fullscreenLabel">Full Screen</span>
+    </button>
+
+    <!-- Zoomable Book Container (Pinch-to-Zoom, Pan & Double-Tap Zoom Target) -->
+    <div id="bookZoomWrapper">
+
     <!-- =====================================================================
          CLOSED HARDCOVER FRONT COVER (INITIAL OPENING STATE)
          ===================================================================== -->
@@ -1200,698 +1291,339 @@
       </button>
     </main>
 
+    </div><!-- /#bookZoomWrapper -->
+
+  </div>
+
+  <!-- Vintage Parchment Toast for iOS Safari Full-Screen Instructions -->
+  <div id="iosFullscreenToast" role="status" aria-live="polite">
+    <p class="font-cormorant italic text-sm sm:text-base text-[#21150e] leading-snug m-0">
+      <strong class="font-cinzel not-italic text-[11px] tracking-wider text-[#761f1c] uppercase block mb-0.5">iPhone Full-Screen Tip</strong>
+      On iPhone: Tap <strong>Share (&uarr;)</strong> &rarr; <strong>&lsquo;Add to Home Screen&rsquo;</strong> for true full-screen mode.
+    </p>
+    <button id="closeToastBtn" type="button" aria-label="Dismiss tip">&times;</button>
   </div>
 
   <script>
     // =========================================================================
-    // 1. VINTAGE FINE-LINE SVG GLASSWARE ENGRAVINGS
+    // 1. SERVING GLASS & BOTANICAL INGREDIENT FINE-LINE ENGRAVINGS
     // =========================================================================
     const GLASS_SVGS = {
-      collins: `
-        <svg class="w-full h-full" viewBox="0 0 42 62" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round" aria-label="Tall Collins Glass">
-          <path d="M12 8 H30 L29 54 H13 Z"/>
-          <line x1="13" y1="49" x2="29" y2="49"/>
-          <path d="M12.5 16 Q21 17.5 29.5 16" stroke-dasharray="1.8 1.8"/>
-          <line x1="25" y1="3" x2="19" y2="45" stroke-width="1.15"/>
-          <circle cx="17.5" cy="26" r="1.1"/>
-          <circle cx="23" cy="33" r="1.1"/>
-          <circle cx="18.5" cy="40" r="1"/>
-        </svg>`,
-      wine: `
-        <svg class="w-full h-full" viewBox="0 0 42 62" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round" aria-label="Large Stemmed Wine Glass">
-          <path d="M10 7 H32 C33 22 28.5 32 21 33 C13.5 32 9 22 10 7 Z"/>
-          <line x1="21" y1="33" x2="21" y2="53"/>
-          <path d="M12.5 54 Q21 52 29.5 54"/>
-          <path d="M10.5 16 Q21 17.5 31.5 16" stroke-dasharray="1.8 1.8"/>
-          <circle cx="17" cy="22" r="1.3"/>
-          <circle cx="24" cy="25" r="1.2"/>
-        </svg>`,
-      coupe_slender: `
-        <svg class="w-full h-full" viewBox="0 0 42 62" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round" aria-label="Slender Champagne Coupe">
-          <path d="M7 13 H35 C35 25 27.5 30 21 30 C14.5 30 7 25 7 13 Z"/>
-          <path d="M7.5 13 Q21 8.5 34.5 13" stroke-width="1.15"/>
-          <line x1="8.5" y1="16.5" x2="33.5" y2="16.5" stroke-dasharray="1.6 1.6"/>
-          <line x1="21" y1="30" x2="21" y2="53"/>
-          <path d="M12.5 54 Q21 52 29.5 54"/>
-        </svg>`,
-      coupe_wide: `
-        <svg class="w-full h-full" viewBox="0 0 42 62" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round" aria-label="Wide Champagne Coupe">
-          <path d="M5.5 14 H36.5 C35.5 25 27.5 30 21 30 C14.5 30 6.5 25 5.5 14 Z"/>
-          <line x1="21" y1="30" x2="21" y2="53"/>
-          <path d="M12.5 54 Q21 52 29.5 54"/>
-          <line x1="7.5" y1="18" x2="34.5" y2="18" stroke-dasharray="1.6 1.6"/>
-        </svg>`,
-      margarita_stepped: `
-        <svg class="w-full h-full" viewBox="0 0 42 62" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round" aria-label="Stepped Margarita Coupette">
-          <path d="M6 13 H36 L32 21 H27 C27 27 23.8 30 21 30 C18.2 30 15 27 15 21 H10 Z"/>
-          <line x1="21" y1="30" x2="21" y2="53"/>
-          <path d="M12.5 54 Q21 52 29.5 54"/>
-          <line x1="8" y1="16.5" x2="34" y2="16.5" stroke-dasharray="1.6 1.6"/>
-        </svg>`,
-      copper_mug: `
-        <svg class="w-full h-full" viewBox="0 0 42 62" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round" aria-label="Hammered Copper Mule Mug">
-          <path d="M10 16 H27 C29.5 28 29.5 40 26 52 H11 C7.5 40 7.5 28 10 16 Z"/>
-          <path d="M28.5 21 H33 C35.5 21 35.5 41 32 41 H28.5"/>
-          <circle cx="16" cy="27" r="0.9"/>
-          <circle cx="22" cy="33" r="0.9"/>
-          <circle cx="17" cy="40" r="0.9"/>
-        </svg>`,
-      tiki_mug: `
-        <svg class="w-full h-full" viewBox="0 0 42 62" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round" aria-label="Polynesian Tiki Mug">
-          <path d="M11 15 H31 L30 53 H12 Z"/>
-          <path d="M11 15 Q21 9 31 15" stroke-dasharray="1.6 1.6"/>
-          <line x1="26" y1="5" x2="22" y2="14" stroke-width="1.2"/>
-          <path d="M14.5 24 L18.5 26.5 L14.5 28.5"/>
-          <path d="M27.5 24 L23.5 26.5 L27.5 28.5"/>
-          <path d="M15.5 37 H26.5 V42 H15.5 Z"/>
-          <line x1="21" y1="37" x2="21" y2="42"/>
-        </svg>`,
-      rocks_cube: `
-        <svg class="w-full h-full" viewBox="0 0 42 62" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round" aria-label="Heavy-Bottomed Rocks Glass">
-          <path d="M9 16 H33 L32 53 H10 Z"/>
-          <line x1="10" y1="47" x2="32" y2="47"/>
-          <line x1="9.5" y1="23" x2="32.5" y2="23" stroke-dasharray="1.6 1.6"/>
-          <rect x="15" y="27" width="12" height="14" rx="1.2" stroke-width="1.1"/>
-        </svg>`,
-      rocks_wine_float: `
-        <svg class="w-full h-full" viewBox="0 0 42 62" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round" aria-label="Rocks Glass with Red Wine Float">
-          <path d="M9 16 H33 L32 53 H10 Z"/>
-          <line x1="10" y1="47" x2="32" y2="47"/>
-          <path d="M9.2 19.5 Q21 17 32.8 19.5" stroke-width="1.2"/>
-          <line x1="9.4" y1="22.8" x2="32.6" y2="22.8"/>
-          <line x1="9.6" y1="26.5" x2="32.4" y2="26.5" stroke-dasharray="1.8 1.5"/>
-          <rect x="15" y="29.5" width="12" height="12" rx="1.2" stroke-width="1.1"/>
-        </svg>`,
-      rocks_smoked: `
-        <svg class="w-full h-full" viewBox="0 0 42 62" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round" aria-label="Smoked Rocks Glass with Rising Smoke">
-          <path d="M9 19 H33 L32 54 H10 Z"/>
-          <line x1="10" y1="48" x2="32" y2="48"/>
-          <rect x="15" y="29" width="12" height="13" rx="1.2" stroke-width="1.1"/>
-          <path d="M14.5 15 C12.5 11 16.5 8 14.5 4" stroke-width="1.15"/>
-          <path d="M21 16 C19 11 23 8 21 3" stroke-width="1.15"/>
-          <path d="M27.5 15 C25.5 11 29.5 8 27.5 4" stroke-width="1.15"/>
-        </svg>`
+      collins: `<svg class="glass-engraving-box" viewBox="0 0 36 52" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round" aria-label="Tall Collins Glass"><path d="M11 6 H25 L24 46 H12 Z"/><line x1="12" y1="42" x2="24" y2="42"/><path d="M11.5 14 Q18 15.5 24.5 14" stroke-dasharray="1.5 1.5"/><line x1="21" y1="3" x2="17" y2="38" stroke-width="1.1"/><circle cx="16" cy="22" r="1"/><circle cx="20" cy="28" r="1"/><circle cx="17" cy="34" r="0.9"/></svg>`,
+      wine: `<svg class="glass-engraving-box" viewBox="0 0 36 52" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round" aria-label="Large Stemmed Wine Glass"><path d="M10 6 H26 C27 18 24 26 18 27 C12 26 9 18 10 6 Z"/><line x1="18" y1="27" x2="18" y2="45"/><path d="M11 46 Q18 44 25 46"/><path d="M10.5 14 Q18 15.5 25.5 14" stroke-dasharray="1.5 1.5"/><circle cx="15" cy="19" r="1"/><circle cx="20" cy="21" r="1"/></svg>`,
+      coupe_foam: `<svg class="glass-engraving-box" viewBox="0 0 36 52" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round" aria-label="Slender Champagne Coupe with Foam"><path d="M7 10 H29 C29 20 23 24 18 24 C13 24 7 20 7 10 Z"/><path d="M7.5 10 Q18 6.5 28.5 10" stroke-width="1.1"/><line x1="18" y1="24" x2="18" y2="45"/><path d="M11 46 Q18 44 25 46"/></svg>`,
+      rocks_foam: `<svg class="glass-engraving-box" viewBox="0 0 36 52" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round" aria-label="Heavy Rocks Glass with Foam"><path d="M8 14 H28 L27 45 H9 Z"/><line x1="9" y1="39" x2="27" y2="39"/><path d="M8.3 18 Q18 16 27.7 18" stroke-width="1.1"/><rect x="13" y="23" width="10" height="11" rx="1" stroke-width="1"/></svg>`,
+      rocks_float: `<svg class="glass-engraving-box" viewBox="0 0 36 52" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round" aria-label="Heavy Rocks Glass with Wine Float"><path d="M8 14 H28 L27 45 H9 Z"/><line x1="9" y1="39" x2="27" y2="39"/><path d="M8.3 18 Q18 16 27.7 18" stroke-width="1.1"/><line x1="8.5" y1="21.5" x2="27.5" y2="21.5" stroke-dasharray="2 1.5"/><rect x="13" y="24" width="10" height="10" rx="1" stroke-width="1"/></svg>`,
+      margarita: `<svg class="glass-engraving-box" viewBox="0 0 36 52" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round" aria-label="Stepped Margarita Coupette"><path d="M6 10 H30 L27 17 H23 C23 22 20 24 18 24 C16 24 13 22 13 17 H9 Z"/><line x1="18" y1="24" x2="18" y2="45"/><path d="M11 46 Q18 44 25 46"/><line x1="8" y1="13" x2="28" y2="13" stroke-dasharray="1.5 1.5"/></svg>`,
+      coupe_wide: `<svg class="glass-engraving-box" viewBox="0 0 36 52" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round" aria-label="Wide Champagne Coupe"><path d="M6 11 H30 C29 20 23 24 18 24 C13 24 7 20 6 11 Z"/><line x1="18" y1="24" x2="18" y2="45"/><path d="M11 46 Q18 44 25 46"/><line x1="7.5" y1="14" x2="28.5" y2="14" stroke-dasharray="1.5 1.5"/></svg>`,
+      copper_mug: `<svg class="glass-engraving-box" viewBox="0 0 36 52" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round" aria-label="Hammered Copper Mule Mug"><path d="M9 14 H24 C26 24 26 35 23 44 H10 C7 35 7 24 9 14 Z"/><path d="M25 18 H29 C31 18 31 36 28 36 H25"/><circle cx="14" cy="23" r="0.8"/><circle cx="19" cy="28" r="0.8"/><circle cx="15" cy="34" r="0.8"/></svg>`,
+      tiki_mug: `<svg class="glass-engraving-box" viewBox="0 0 36 52" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round" aria-label="Polynesian Tiki Mug"><path d="M10 12 H26 L25 46 H11 Z"/><path d="M10 12 Q18 7 26 12" stroke-dasharray="1.5 1.5"/><path d="M13 21 L16 23 L13 24"/><path d="M23 21 L20 23 L23 24"/><path d="M14 32 H22 V36 H14 Z"/><line x1="18" y1="32" x2="18" y2="36"/></svg>`,
+      rocks: `<svg class="glass-engraving-box" viewBox="0 0 36 52" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round" aria-label="Heavy Rocks Glass"><path d="M8 14 H28 L27 45 H9 Z"/><line x1="9" y1="39" x2="27" y2="39"/><line x1="8.5" y1="20" x2="27.5" y2="20" stroke-dasharray="1.5 1.5"/><rect x="13" y="23" width="10" height="12" rx="1" stroke-width="1.1"/></svg>`,
+      rocks_smoked: `<svg class="glass-engraving-box" viewBox="0 0 36 52" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round" aria-label="Smoked Rocks Glass"><path d="M8 16 H28 L27 46 H9 Z"/><line x1="9" y1="40" x2="27" y2="40"/><rect x="13" y="25" width="10" height="11" rx="1" stroke-width="1.1"/><path d="M13 13 C11 10 15 8 13 5" stroke-width="1.1"/><path d="M18 14 C16 11 20 8 18 4" stroke-width="1.1"/><path d="M23 13 C21 10 25 8 23 5" stroke-width="1.1"/></svg>`
     };
 
-    // =========================================================================
-    // 2. LARGE VINTAGE BOTANICAL SVG ENGRAVINGS (BOTTOM-RIGHT, TILTED 30°)
-    // =========================================================================
     const BOTANICAL_SVGS = {
-      passion_fruit: `
-        <svg class="w-full h-full" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="20" cy="21" r="13"/>
-          <circle cx="20" cy="21" r="9.6" stroke-dasharray="2.2 1.6"/>
-          <circle cx="17" cy="17.5" r="1.1" fill="currentColor"/>
-          <circle cx="23" cy="18" r="1.1" fill="currentColor"/>
-          <circle cx="18" cy="23.5" r="1.1" fill="currentColor"/>
-          <circle cx="22.5" cy="24" r="1.1" fill="currentColor"/>
-          <circle cx="20" cy="20.8" r="1" fill="currentColor"/>
-          <path d="M20 8 C20 4.5 24 3 27 5.5"/>
-          <path d="M12 24 C13.5 27 16.5 28.5 19.5 28.5" stroke-width="0.9"/>
-        </svg>`,
-      lychee_cluster: `
-        <svg class="w-full h-full" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M16 14 C10 14 7 19 7 24.5 C7 30 11 33.5 16 33.5 C21 33.5 25 30 25 24.5 C25 19 22 14 16 14 Z"/>
-          <path d="M25 11 C29 11 33 14.5 33 19.5 C33 24 30 27 26 27"/>
-          <path d="M16 14 L21 6 L26 11"/>
-          <path d="M21 6 C25 4 30 5 32 8 C28 9.5 24 8.5 21 6 Z"/>
-          <circle cx="13" cy="20" r="0.8" fill="currentColor"/>
-          <circle cx="18" cy="19" r="0.8" fill="currentColor"/>
-          <circle cx="15" cy="24" r="0.8" fill="currentColor"/>
-          <circle cx="20" cy="24" r="0.8" fill="currentColor"/>
-          <circle cx="13" cy="28" r="0.8" fill="currentColor"/>
-          <circle cx="18" cy="29" r="0.8" fill="currentColor"/>
-        </svg>`,
-      wild_strawberry: `
-        <svg class="w-full h-full" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M11 14 C8 19 11 28 18 32.5 C25 28 28 19 25 14 C21 12 15 12 11 14 Z"/>
-          <path d="M12 13 L15 9 L18 13 L21 9 L24 13"/>
-          <line x1="18" y1="9" x2="18" y2="4.5"/>
-          <circle cx="15" cy="19" r="0.7" fill="currentColor"/>
-          <circle cx="21" cy="19" r="0.7" fill="currentColor"/>
-          <circle cx="18" cy="23.5" r="0.7" fill="currentColor"/>
-          <circle cx="15" cy="26.5" r="0.7" fill="currentColor"/>
-          <circle cx="21" cy="26.5" r="0.7" fill="currentColor"/>
-          <path d="M25 12 C28.5 10 33 12 34 16 C31 18 27 17 25 12 Z"/>
-        </svg>`,
-      cucumber_blossoms: `
-        <svg class="w-full h-full" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="18" cy="21" r="12"/>
-          <circle cx="18" cy="21" r="9"/>
-          <path d="M18 15 L18 17.5 M18 24.5 L18 27 M12 21 L14.5 21 M21.5 21 L24 21 M13.8 16.8 L15.5 18.5 M20.5 23.5 L22.2 25.2 M22.2 16.8 L20.5 18.5 M15.5 23.5 L13.8 25.2"/>
-          <circle cx="29" cy="10" r="2"/>
-          <circle cx="29" cy="6.5" r="2"/>
-          <circle cx="32.5" cy="9" r="2"/>
-          <circle cx="31" cy="13" r="2"/>
-          <circle cx="26.5" cy="12.5" r="2"/>
-        </svg>`,
-      elderflower_umbel: `
-        <svg class="w-full h-full" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="20" cy="16" r="2.4"/>
-          <circle cx="20" cy="9" r="3.2"/>
-          <circle cx="27" cy="14" r="3.2"/>
-          <circle cx="24.5" cy="22.5" r="3.2"/>
-          <circle cx="15.5" cy="22.5" r="3.2"/>
-          <circle cx="13" cy="14" r="3.2"/>
-          <line x1="20" y1="18.5" x2="20" y2="35"/>
-          <path d="M20 28 C24 25.5 28 26.5 29 29 C25.5 30.5 22 30 20 28 Z"/>
-        </svg>`,
-      roasted_almonds: `
-        <svg class="w-full h-full" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M16 7 C10 13 8 22 10 28 C12 32 20 32 22 28 C24 22 22 13 16 7 Z"/>
-          <path d="M13.5 15.5 C12.5 19.5 13 23.5 14.5 26.5"/>
-          <path d="M18.5 14.5 C19.5 18.5 19 22.5 17.5 26.5"/>
-          <path d="M23 14 C27 17 31 23 30 29 C29 32 24 33 21 31"/>
-        </svg>`,
-      vine_tomato: `
-        <svg class="w-full h-full" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M20 13 C12 13 8 18 8 24.5 C8 30.5 13 34.5 20 34.5 C27 34.5 32 30.5 32 24.5 C32 18 28 13 20 13 Z"/>
-          <path d="M20 13 L20 6.5 M20 13 L14.5 9 M20 13 L25.5 9 M20 13 L15.5 16.5 M20 13 L24.5 16.5"/>
-          <path d="M12 25 C12.5 28.5 15 31 18 31.5" stroke-width="0.9"/>
-        </svg>`,
-      wine_grapes: `
-        <svg class="w-full h-full" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M20 5.5 L20 11 M20 8 C24.5 6.5 27 8 28 11"/>
-          <circle cx="16" cy="15" r="3"/>
-          <circle cx="24" cy="15" r="3"/>
-          <circle cx="13" cy="21" r="3"/>
-          <circle cx="20" cy="21" r="3"/>
-          <circle cx="27" cy="21" r="3"/>
-          <circle cx="16.5" cy="27" r="3"/>
-          <circle cx="23.5" cy="27" r="3"/>
-          <circle cx="20" cy="33" r="3"/>
-        </svg>`,
-      lime_wedges: `
-        <svg class="w-full h-full" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M7 13 C7 26 17 34 30 31 L19 20 Z"/>
-          <path d="M10.5 16.5 C11.5 24 18 29 25.5 28"/>
-          <line x1="19" y1="20" x2="11.5" y2="23"/>
-          <line x1="19" y1="20" x2="18" y2="29"/>
-          <line x1="19" y1="20" x2="24" y2="26"/>
-          <path d="M22 9 C27 9 32 13 33 18 L24 16 Z"/>
-        </svg>`,
-      valencia_orange: `
-        <svg class="w-full h-full" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="19" cy="20" r="12.5"/>
-          <circle cx="19" cy="20" r="9.6"/>
-          <line x1="19" y1="10.4" x2="19" y2="29.6"/>
-          <line x1="9.4" y1="20" x2="28.6" y2="20"/>
-          <line x1="12.2" y1="13.2" x2="25.8" y2="26.8"/>
-          <line x1="25.8" y1="13.2" x2="12.2" y2="26.8"/>
-          <path d="M26 8 C29 6 33 7 34 10 C31 11.5 28 10.5 26 8 Z"/>
-        </svg>`,
-      ginger_root: `
-        <svg class="w-full h-full" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M7 24 C6 20 10 17 14 18.5 C15 13.5 20.5 11 24.5 13.5 C27.5 11 32.5 12.5 32.5 16.5 C32.5 19 29.5 20.5 27.5 20.5 C28.5 24.5 25.5 28.5 21.5 27 C19 31 12.5 31 10 27 C8 27 7 25.5 7 24 Z"/>
-          <path d="M14 20 C15.5 21.5 17 21.5 18.5 20"/>
-          <path d="M22 16.5 C23.5 17.5 25 17.5 26.5 16.5"/>
-        </svg>`,
-      palm_coconut: `
-        <svg class="w-full h-full" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="17.5" cy="24.5" r="9.5"/>
-          <circle cx="15" cy="21.5" r="1.1" fill="currentColor"/>
-          <circle cx="19" cy="20.5" r="1.1" fill="currentColor"/>
-          <circle cx="17.5" cy="25" r="1.1" fill="currentColor"/>
-          <path d="M20 14 C24 9 30.5 9 34 13 M22.5 11.5 L26 7 M27 10.5 L30.5 7.5 M30.5 11.5 L34.5 9.5"/>
-        </svg>`,
-      juniper_citrus: `
-        <svg class="w-full h-full" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M8 31 C15 24 22 16 30 7"/>
-          <path d="M14 25 L10 20 M18.5 20.5 L14.5 15.5 M23.5 15 L19.5 10 M18 22 L24.5 23.5 M23 17 L29.5 18.5"/>
-          <circle cx="16.5" cy="22.5" r="2"/>
-          <circle cx="21.5" cy="17.5" r="2"/>
-          <circle cx="25.5" cy="13" r="1.6"/>
-          <path d="M25 27 C29 25 33 28 31 32 C29 35 24 33 26 30" stroke-width="1.1"/>
-        </svg>`,
-      blue_agave: `
-        <svg class="w-full h-full" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round">
-          <ellipse cx="20" cy="28" rx="6.5" ry="5.5"/>
-          <path d="M20 22.5 L20 6.5 M17 22.5 L12 9.5 M23 22.5 L28 9.5 M14.5 25 L7 16 M25.5 25 L33 16"/>
-          <path d="M16 27 Q20 29 24 27" stroke-width="0.9"/>
-        </svg>`,
-      pine_bough: `
-        <svg class="w-full h-full" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="8" y1="30" x2="30" y2="8.5"/>
-          <path d="M14.5 23.5 L10.5 17.5 M19 19.5 L15 13.5 M24 14.5 L20 8.5 M17.5 23.5 L24 26 M22.5 18.5 L29 21"/>
-          <ellipse cx="13" cy="29" rx="3.2" ry="4.6" transform="rotate(-35 13 29)"/>
-        </svg>`,
-      poblano_chili: `
-        <svg class="w-full h-full" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M26.5 10.5 C30.5 14.5 29.5 25 20 30 C15 32.8 10 31 8 28.5 C12 28.5 17 25 20 18.5 C21.5 14.5 22.5 11.5 26.5 10.5 Z"/>
-          <path d="M26.5 10.5 C28 7.5 30.5 6.5 33.5 8"/>
-          <path d="M15 26 C18 24 20.5 21 22.5 17" stroke-width="0.9" stroke-dasharray="1.5 1.5"/>
-        </svg>`,
-      rye_stalks: `
-        <svg class="w-full h-full" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="9" y1="31" x2="29" y2="9"/>
-          <ellipse cx="16.5" cy="19.5" rx="2" ry="3.8" transform="rotate(-25 16.5 19.5)"/>
-          <ellipse cx="21.5" cy="14.5" rx="2" ry="3.8" transform="rotate(-25 21.5 14.5)"/>
-          <ellipse cx="20.5" cy="23.5" rx="2" ry="3.8" transform="rotate(65 20.5 23.5)"/>
-          <ellipse cx="25.5" cy="18.5" rx="2" ry="3.8" transform="rotate(65 25.5 18.5)"/>
-          <line x1="14" y1="33" x2="32" y2="14" stroke-width="0.95"/>
-        </svg>`,
-      cherry_wood_fruit: `
-        <svg class="w-full h-full" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="13" cy="28" r="5"/>
-          <circle cx="26" cy="29" r="5"/>
-          <path d="M13 23 C16 16 20 11 23 7 C24 12 25 18 26 24"/>
-          <path d="M23 7 C27 6 31 8 32 11 C28 12 24 11 23 7 Z"/>
-          <line x1="8" y1="12" x2="31" y2="5" stroke-width="1.1"/>
-        </svg>`,
-      star_anise: `
-        <svg class="w-full h-full" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="20" cy="20" r="2.5"/>
-          <path d="M20 7 L22.8 16 L31.8 13.2 L25 20 L31.8 27.8 L22.8 24 L20 33 L17.2 24 L8.2 27.8 L15 20 L8.2 13.2 L17.2 16 Z"/>
-        </svg>`,
-      habanero_pepper: `
-        <svg class="w-full h-full" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M13 16 C10.5 20 12 28 17 31.8 C18.8 33 21.2 33 23 31.8 C28 28 29.5 20 27 16 C23 13 17 13 13 16 Z"/>
-          <path d="M17 16 C17 22.5 18.2 28 20 31.8"/>
-          <path d="M23 16 C23 22.5 21.8 28 20 31.8"/>
-          <path d="M20 13 C20 9 22.8 7 25.5 7"/>
-        </svg>`
+      passion: `<svg class="botanical-etching" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="16" cy="17" r="11"/><circle cx="16" cy="17" r="8.2" stroke-dasharray="2 1.5"/><circle cx="14" cy="14" r="1"/><circle cx="19" cy="15" r="1"/><circle cx="15" cy="19" r="1"/><circle cx="18.5" cy="20" r="1"/><path d="M16 6 C16 3 19 2 21 3"/></svg>`,
+      lychee: `<svg class="botanical-etching" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 9 C10 9 7 14 7 19 C7 25 11 28 16 28 C21 28 25 25 25 19 C25 14 22 9 16 9 Z"/><path d="M16 9 L16 5 M16 6 C19 4 23 5 24 7 C21 8 18 7 16 6 Z"/><circle cx="13" cy="15" r="0.6"/><circle cx="18" cy="14" r="0.6"/><circle cx="15" cy="19" r="0.6"/><circle cx="20" cy="19" r="0.6"/><circle cx="13" cy="23" r="0.6"/><circle cx="18" cy="24" r="0.6"/></svg>`,
+      strawberry: `<svg class="botanical-etching" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 12 C8 16 10 24 16 28 C22 24 24 16 22 12 C19 10 13 10 10 12 Z"/><path d="M11 11 L13 8 L16 11 L19 8 L21 11"/><line x1="16" y1="8" x2="16" y2="5"/><circle cx="14" cy="16" r="0.6"/><circle cx="18" cy="16" r="0.6"/><circle cx="16" cy="20" r="0.6"/><circle cx="14" cy="23" r="0.6"/><circle cx="18" cy="23" r="0.6"/></svg>`,
+      cucumber: `<svg class="botanical-etching" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="16" cy="16" r="10.5"/><circle cx="16" cy="16" r="8"/><path d="M16 11 L16 13 M16 19 L16 21 M11 16 L13 16 M19 16 L21 16 M12.5 12.5 L14 14 M18 18 L19.5 19.5 M19.5 12.5 L18 14 M14 18 L12.5 19.5"/></svg>`,
+      elderflower: `<svg class="botanical-etching" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="16" cy="14" r="2"/><circle cx="16" cy="8" r="2.5"/><circle cx="22" cy="12" r="2.5"/><circle cx="20" cy="19" r="2.5"/><circle cx="12" cy="19" r="2.5"/><circle cx="10" cy="12" r="2.5"/><line x1="16" y1="16" x2="16" y2="28"/></svg>`,
+      almond: `<svg class="botanical-etching" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 6 C11 11 9 18 11 23 C12.5 26 19.5 26 21 23 C23 18 21 11 16 6 Z"/><path d="M14 13 C13 16 13.5 20 15 22"/><path d="M18 12 C19 15 18.5 19 17 22"/></svg>`,
+      tomato: `<svg class="botanical-etching" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 11 C10 11 7 15 7 20 C7 25 11 28 16 28 C21 28 25 25 25 20 C25 15 22 11 16 11 Z"/><path d="M16 11 L16 6 M16 11 L12 8 M16 11 L20 8 M16 11 L13 13 M16 11 L19 13"/></svg>`,
+      grapes: `<svg class="botanical-etching" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 5 L16 9 M16 7 C19 6 21 7 22 9"/><circle cx="13" cy="12" r="2.5"/><circle cx="19" cy="12" r="2.5"/><circle cx="11" cy="17" r="2.5"/><circle cx="16" cy="17" r="2.5"/><circle cx="21" cy="17" r="2.5"/><circle cx="13.5" cy="22" r="2.5"/><circle cx="18.5" cy="22" r="2.5"/><circle cx="16" cy="26.5" r="2.5"/></svg>`,
+      lime: `<svg class="botanical-etching" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 11 C7 21 15 27 25 25 L16 16 Z"/><path d="M9.5 13.5 C10 19.5 15.5 23.5 21.5 22.5"/><line x1="16" y1="16" x2="10" y2="18"/><line x1="16" y1="16" x2="15" y2="23"/><line x1="16" y1="16" x2="20" y2="21"/></svg>`,
+      orange: `<svg class="botanical-etching" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="16" cy="16" r="10.5"/><circle cx="16" cy="16" r="8.2"/><line x1="16" y1="7.8" x2="16" y2="24.2"/><line x1="7.8" y1="16" x2="24.2" y2="16"/><line x1="10.2" y1="10.2" x2="21.8" y2="21.8"/><line x1="21.8" y1="10.2" x2="10.2" y2="21.8"/></svg>`,
+      ginger: `<svg class="botanical-etching" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 20 C6 17 9 15 12 16 C13 12 17 10 20 12 C22 10 26 11 26 14 C26 16 24 17 22 17 C23 20 21 23 18 22 C16 25 11 25 9 22 C8 22 7 21 7 20 Z"/><path d="M12 17 C13 18 14 18 15 17"/><path d="M18 14 C19 15 20 15 21 14"/></svg>`,
+      coconut: `<svg class="botanical-etching" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="15" cy="20" r="7.5"/><circle cx="13" cy="18" r="0.8" fill="currentColor"/><circle cx="16" cy="17" r="0.8" fill="currentColor"/><circle cx="15" cy="20.5" r="0.8" fill="currentColor"/><path d="M17 12 C20 8 25 8 27 11 M19 10 L21 7 M22 9 L25 7"/></svg>`,
+      juniper: `<svg class="botanical-etching" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 25 C13 20 18 14 24 7"/><path d="M12 21 L9 17 M15 17 L12 13 M19 13 L16 9 M15 18 L20 19 M19 14 L24 15"/><circle cx="13.5" cy="18.5" r="1.5"/><circle cx="17.5" cy="14.5" r="1.5"/></svg>`,
+      agave: `<svg class="botanical-etching" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="16" cy="22" rx="5" ry="4.5"/><path d="M16 18 L16 6 M14 18 L10 8 M18 18 L22 8 M12 20 L6 13 M20 20 L26 13"/></svg>`,
+      pine: `<svg class="botanical-etching" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="7" y1="24" x2="24" y2="8"/><path d="M12 19 L9 14 M15 16 L12 11 M19 12 L16 7 M14 19 L19 21 M18 15 L23 17"/><ellipse cx="11" cy="23" rx="2.5" ry="3.5" transform="rotate(-35 11 23)"/></svg>`,
+      chili: `<svg class="botanical-etching" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 9 C24 12 23 20 16 24 C12 26 8 25 7 23 C10 23 14 20 16 15 C17 12 18 10 21 9 Z"/><path d="M21 9 C22 7 24 6 26 7"/></svg>`,
+      rye: `<svg class="botanical-etching" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="9" y1="25" x2="23" y2="9"/><ellipse cx="14" cy="16" rx="1.6" ry="3" transform="rotate(-25 14 16)"/><ellipse cx="18" cy="12" rx="1.6" ry="3" transform="rotate(-25 18 12)"/><ellipse cx="17" cy="19" rx="1.6" ry="3" transform="rotate(65 17 19)"/><ellipse cx="21" cy="15" rx="1.6" ry="3" transform="rotate(65 21 15)"/></svg>`,
+      cherry: `<svg class="botanical-etching" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="22" r="4"/><circle cx="21" cy="23" r="4"/><path d="M11 18 C13 13 16 9 18 6 C19 10 20 15 21 19"/><path d="M18 6 C21 5 24 7 25 9 C22 10 19 9 18 6 Z"/></svg>`,
+      anise: `<svg class="botanical-etching" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="16" cy="16" r="2"/><path d="M16 6 L18 13 L25 11 L20 16 L25 22 L18 19 L16 26 L14 19 L7 22 L12 16 L7 11 L14 13 Z"/></svg>`,
+      habanero: `<svg class="botanical-etching" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 13 C9 16 10 22 14 25 C15 26 17 26 18 25 C22 22 23 16 21 13 C18 11 14 11 11 13 Z"/><path d="M14 13 C14 18 15 22 16 25"/><path d="M18 13 C18 18 17 22 16 25"/><path d="M16 11 C16 8 18 6 20 6"/></svg>`
     };
 
     // =========================================================================
-    // 3. EXACT 20 COCKTAILS ACROSS 5 FOLIOS (COLUMN-FIRST MATRIX PER SPREAD)
+    // 2. FIVE DOUBLE-PAGE SPREADS (20 COCKTAILS IN COLUMN-FIRST ORDER)
     // =========================================================================
     const SPREADS = [
       {
-        folio: "Folio I of V",
-        chapterLeft: "I. Crisp, Floral & Effervescent",
-        chapterRight: "Highballs & Botanical Spritzes",
-        leftCocktails: [
+        roman: "I",
+        chapter: "Chapter I • Crisp, Floral & Effervescent",
+        subtitle: "Light, refreshing & sparkling libations",
+        leftDrinks: [
           {
             num: "01",
+            name: "Passion & Peach Lemon Fizz",
             goldStar: true,
             badges: [],
-            name: "Passion & Peach Lemon Fizz",
-            pedigree: "House Gold Star Original · Tall Collins",
-            profile: "Sparkling tropical passion fruit, soft orchard peach & elderflower",
-            ingredients: "Tanqueray No. TEN Gin · Fresh Passion Fruit · Peach Liqueur · St. Germain Elderflower · Lemon Juice · Cold Soda Water",
+            pedigree: "House Gold Star Original • Tall Collins Glass",
             glass: "collins",
-            botanical: "passion_fruit"
+            botanical: "passion",
+            profile: "Airy, sparkling tropical passion fruit rounded out by soft orchard peach and delicate elderflower perfume with zero harsh acid bite.",
+            ingredients: "Tanqueray No. TEN Gin • Fresh Passion Fruit • Peach Liqueur • St. Germain Elderflower • Fresh Lemon • Cold Soda Water"
           },
           {
             num: "02",
+            name: "Lychee Blossom Fizz",
             goldStar: false,
             badges: [],
-            name: "Lychee Blossom Fizz",
-            pedigree: "House Original · Tall Collins",
-            profile: "Delicate Asian lychee, French elderflower & crisp citrus bubbles",
-            ingredients: "Tanqueray No. TEN Gin · Bols Lychee · St. Germain Elderflower · Lemon Juice · Cold Soda Water",
+            pedigree: "House Approved Original • Tall Collins Glass",
             glass: "collins",
-            botanical: "lychee_cluster"
+            botanical: "lychee",
+            profile: "Delicate Asian lychee and French elderflower blossoms over a crisp citrus-gin backbone, lengthened with cold bubbles.",
+            ingredients: "Tanqueray No. TEN Gin • Bols Lychee Liqueur • St. Germain Elderflower • Fresh Lemon • Cold Soda Water"
           }
         ],
-        rightCocktails: [
+        rightDrinks: [
           {
             num: "03",
+            name: "Orchard & Strawberry Spritz",
             goldStar: false,
             badges: [],
-            name: "Orchard & Strawberry Spritz",
-            pedigree: "House Original · Large Wine Glass",
-            profile: "Crisp Granny Smith apple snap & wild mountain strawberries",
-            ingredients: "Tanqueray No. TEN Gin · Fragola di Bosco Wild Strawberry · Luxardo Sour Apple · St. Germain · Lemon Juice · Soda Water",
+            pedigree: "House Approved Original • Large Stemmed Wine Glass",
             glass: "wine",
-            botanical: "wild_strawberry"
+            botanical: "strawberry",
+            profile: "Crisp Granny Smith green apple snap and sweet wild mountain strawberries lifted by fragrant elderflower and sparkling soda.",
+            ingredients: "Tanqueray No. TEN Gin • Fragola di Bosco Wild Strawberry • Luxardo Sour Apple • St. Germain Elderflower • Fresh Lemon • Soda Water"
           },
           {
             num: "04",
+            name: "The Green Garden Fizz",
             goldStar: false,
             badges: [],
-            name: "The Green Garden Fizz",
-            pedigree: "House Original · Tall Collins",
-            profile: "Cooling muddled cucumber, bright lime snap & elderflower",
-            ingredients: "Maestro Dobel Diamante Tequila · Fresh Cucumber · St. Germain Elderflower · Cointreau · Lime Juice · Cold Soda Water",
+            pedigree: "House Approved Original • Tall Collins Glass",
             glass: "collins",
-            botanical: "cucumber_blossoms"
+            botanical: "cucumber",
+            profile: "Ultra-refreshing cooling muddled cucumber, bright lime snap, and light elderflower blossoms over silky cristalino agave.",
+            ingredients: "Maestro Dobel Diamante Tequila • Fresh Cucumber • St. Germain Elderflower • Cointreau • Fresh Lime • Cold Soda Water"
           }
         ]
       },
       {
-        folio: "Folio II of V",
-        chapterLeft: "II. Velvety Foam Sours & Classic Twists",
-        chapterRight: "Botanical Root-Foamed Libations",
-        leftCocktails: [
+        roman: "II",
+        chapter: "Chapter II • Velvety Foam Sours & Classic Twists",
+        subtitle: "Shaken citrus sours with a lush botanical foam crown",
+        leftDrinks: [
           {
             num: "05",
+            name: "The Clover Blossom Club",
             goldStar: false,
             badges: ["foam"],
-            name: "The Clover Blossom Club",
-            pedigree: "Classic Clover Club Twist · Slender Coupe",
-            profile: "Pastel-pink wild strawberry & elderflower sour with velvet foam",
-            ingredients: "Tanqueray No. TEN Gin · Fragola di Bosco Wild Strawberry · St. Germain · Lemon Juice · Gofer's Root Foamer",
-            glass: "coupe_slender",
-            botanical: "elderflower_umbel"
+            pedigree: "Classic Clover Club Twist • Slender Champagne Coupe",
+            glass: "coupe_foam",
+            botanical: "elderflower",
+            profile: "A pastel-pink, silky wild strawberry and elderflower gin sour crowned with a dense, velvety botanical foam head.",
+            ingredients: "Tanqueray No. TEN Gin • Fragola di Bosco Wild Strawberry • St. Germain Elderflower • Fresh Lemon • Botanical Root Foam"
           },
           {
             num: "06",
+            name: "Velvet Amaretto & Rye Sour",
             goldStar: false,
             badges: ["foam"],
-            name: "Velvet Amaretto & Rye Sour",
-            pedigree: "Classic Amaretto Sour Twist · Rocks Glass",
-            profile: "Roasted almond sweetness balanced by spicy rye & frothy citrus",
-            ingredients: "Bulleit 95 Rye · Amaretto Liqueur · Lemon Juice · Angostura Bitters · Gofer's Root Foamer",
-            glass: "rocks_cube",
-            botanical: "roasted_almonds"
+            pedigree: "Classic Amaretto Sour Twist • Heavy Rocks Glass",
+            glass: "rocks_foam",
+            botanical: "almond",
+            profile: "Roasted almond sweetness balanced by spicy high-rye whiskey, bright lemon, and a frothy cap dotted with aromatic bitters.",
+            ingredients: "Bulleit 95 Rye • Amaretto Liqueur • Fresh Lemon • Angostura Bitters • Botanical Root Foam"
           }
         ],
-        rightCocktails: [
+        rightDrinks: [
           {
             num: "07",
+            name: "Mediterranean Blossom",
             goldStar: false,
             badges: ["foam"],
-            name: "Mediterranean Blossom",
-            pedigree: "Original Savory-Botanical Sour · Slender Coupe",
-            profile: "Sun-ripened tomato liqueur, elderflower & gentle lemon velvet",
-            ingredients: "Tanqueray No. TEN Gin · La Tomato Liqueur · St. Germain Elderflower · Lemon Juice · Gofer's Root Foamer",
-            glass: "coupe_slender",
-            botanical: "vine_tomato"
+            pedigree: "House Approved Original • Slender Champagne Coupe",
+            glass: "coupe_foam",
+            botanical: "tomato",
+            profile: "Sweet sun-ripened tomato liqueur and elderflower blossoms balanced by crisp London Dry gin, gentle lemon, and silky foam.",
+            ingredients: "Tanqueray No. TEN Gin • La Tomato Liqueur • St. Germain Elderflower • Fresh Lemon • Botanical Root Foam"
           },
           {
             num: "08",
+            name: "Rye & Solera New York Sour",
             goldStar: false,
             badges: ["foam"],
-            name: "Rye & Solera New York Sour",
-            pedigree: "Classic Whiskey Sour Twist · Rocks Glass",
-            profile: "Tart lemon & spicy rye crowned with velvet foam & red wine float",
-            ingredients: "Bulleit 95 Rye · Lemon Juice · Cane Syrup · Gofer's Root Foamer · Dry Red Wine Float",
-            glass: "rocks_wine_float",
-            botanical: "wine_grapes"
+            pedigree: "Classic Whiskey Sour Twist • Heavy Rocks Glass",
+            glass: "rocks_float",
+            botanical: "grapes",
+            profile: "Tart lemon and spicy high-rye whiskey crowned with a velvety foam layer and a striking crimson float of dry red wine.",
+            ingredients: "Bulleit 95 Rye • Fresh Lemon • Cane Syrup • Dry Red Wine Float • Botanical Root Foam"
           }
         ]
       },
       {
-        folio: "Folio III of V",
-        chapterLeft: "III. Bright Agave, Tropical & Spiced Sours",
-        chapterRight: "Daisies, Copper Bucks & Tiki Swizzles",
-        leftCocktails: [
+        roman: "III",
+        chapter: "Chapter III • Bright Agave, Tropical & Spiced Sours",
+        subtitle: "Vibrant daisies, ginger highballs & tiki builds",
+        leftDrinks: [
           {
             num: "09",
+            name: "The Passion Fruit Margarita Daisy",
             goldStar: true,
             badges: [],
-            name: "The Passion Fruit Margarita Daisy",
-            pedigree: "House Gold Star Original · Stepped Margarita Coupette",
-            profile: "Bone-dry tropical tartness, fresh passion fruit & cristalino agave",
-            ingredients: "Maestro Dobel Diamante Tequila · Fresh Passion Fruit · Cointreau · St. Germain Elderflower · Lime Juice",
-            glass: "margarita_stepped",
-            botanical: "lime_wedges"
+            pedigree: "House Gold Star Original • Stepped Margarita Coupette",
+            glass: "margarita",
+            botanical: "lime",
+            profile: "Crisp, bone-dry tropical tartness; fresh passion fruit acidity and elderflower blossom carrying oak-kissed reposado tequila.",
+            ingredients: "Maestro Dobel Diamante Tequila • Fresh Passion Fruit • Cointreau • St. Germain Elderflower • Fresh Lime"
           },
           {
             num: "10",
+            name: "The Valencia Passion Daisy",
             goldStar: true,
             badges: [],
-            name: "The Valencia Passion Daisy",
-            pedigree: "House Gold Star Original · Wide Coupe",
-            profile: "Freshly squeezed Valencia orange, passion fruit & silky agave",
-            ingredients: "Maestro Dobel Diamante Tequila · Fresh Passion Fruit · Fresh Valencia Orange Juice · Cointreau · St. Germain · Lemon Juice",
+            pedigree: "House Gold Star Original • Wide-Bowl Champagne Coupe",
             glass: "coupe_wide",
-            botanical: "valencia_orange"
+            botanical: "orange",
+            profile: "Sun-ripened freshly squeezed Valencia orange and tropical passion fruit paired with silky agave and delicate elderflower.",
+            ingredients: "Maestro Dobel Diamante Tequila • Fresh Passion Fruit • Fresh Orange Juice • Cointreau • St. Germain • Fresh Lemon"
           }
         ],
-        rightCocktails: [
+        rightDrinks: [
           {
             num: "11",
+            name: "High-Proof Agave Ginger Sour",
             goldStar: false,
             badges: [],
-            name: "High-Proof Agave Ginger Sour",
-            pedigree: "Classic Mexican Mule Twist · Hammered Copper Mug",
-            profile: "Crisp reposado tequila, orange liqueur & lime with fiery ginger",
-            ingredients: "Maestro Dobel Diamante Tequila · Cointreau · Lime Juice · Thomas Henry Spicy Ginger Beer",
+            pedigree: "Classic Mexican Mule Twist • Hammered Copper Mug",
             glass: "copper_mug",
-            botanical: "ginger_root"
+            botanical: "ginger",
+            profile: "Crisp reposado tequila, clean orange liqueur, and sharp lime lengthened by the fiery effervescence of spicy ginger beer.",
+            ingredients: "Maestro Dobel Diamante Tequila • Cointreau • Fresh Lime • Spicy Ginger Beer"
           },
           {
             num: "12",
+            name: "The Ceylon Island Swizzle",
             goldStar: false,
             badges: [],
-            name: "The Ceylon Island Swizzle",
-            pedigree: "House Original · Polynesian Tiki Mug",
-            profile: "Aged coconut palm arrack, toasted almond & alpine herbs over ice",
-            ingredients: "Old Reserve Ceylon Arrack · Green Chartreuse · Almond Orgeat · Lime Juice · Celery Bitters · Cracked Pepper",
+            pedigree: "House Original • Polynesian / Moai Tiki Mug",
             glass: "tiki_mug",
-            botanical: "palm_coconut"
+            botanical: "coconut",
+            profile: "Aged coconut palm sap arrack, toasted almond orgeat, and alpine herbs over crushed ice with a savory cracked-pepper crown.",
+            ingredients: "Old Reserve Arrack • Green Chartreuse • Almond Orgeat • Fresh Lime • Celery Bitters • 4-Seasons Pepper"
           }
         ]
       },
       {
-        folio: "Folio IV of V",
-        chapterLeft: "IV. Negroni & Bittersweet Aperitivo Twists",
-        chapterRight: "Stirred Botanical & Alpine Variations",
-        leftCocktails: [
+        roman: "IV",
+        chapter: "Chapter IV • Negroni & Bittersweet Aperitivo Twists",
+        subtitle: "Stirred aromatic riffs from crisp botanical to dark alpine",
+        leftDrinks: [
           {
             num: "13",
+            name: "Santoni Bianco Negroni",
             goldStar: false,
             badges: [],
-            name: "Santoni Bianco Negroni",
-            pedigree: "White Negroni Twist · Rocks Glass",
-            profile: "Crisp botanical gin, Italian rhubarb amaro & white vermouth",
-            ingredients: "Tanqueray No. TEN Gin · Vermouth Bianco · Amaro Santoni · Celery Bitters · Grapefruit Twist",
-            glass: "rocks_cube",
-            botanical: "juniper_citrus"
+            pedigree: "White Negroni Twist • Heavy Rocks Glass",
+            glass: "rocks",
+            botanical: "juniper",
+            profile: "Crisp, floral, and refreshingly bittersweet—pairing citrus-forward gin with Italian rhubarb amaro and white vermouth.",
+            ingredients: "Tanqueray No. TEN Gin • Vermouth Bianco • Amaro Santoni • Celery Bitters"
           },
           {
             num: "14",
+            name: "Cristalino Rosita",
             goldStar: false,
             badges: [],
-            name: "Cristalino Rosita",
-            pedigree: "Classic Agave Negroni Twist · Rocks Glass",
-            profile: "Silky diamond-filtered tequila with split sweet & white vermouth",
-            ingredients: "Maestro Dobel Diamante Tequila · Vermouth Bianco · Cocchi Vermouth di Torino · Campari · Orange Bitters",
-            glass: "rocks_cube",
-            botanical: "blue_agave"
+            pedigree: "Agave Negroni Twist • Heavy Rocks Glass",
+            glass: "rocks",
+            botanical: "agave",
+            profile: "Silky diamond-filtered reposado tequila framed by a split of sweet and white vermouth with a gentle Campari bitter bite.",
+            ingredients: "Maestro Dobel Diamante Tequila • Vermouth Bianco • Cocchi Vermouth di Torino • Campari • Orange Bitters"
           }
         ],
-        rightCocktails: [
+        rightDrinks: [
           {
             num: "15",
+            name: "Bulleit & Braulio Black Boulevardier",
             goldStar: false,
             badges: [],
-            name: "Bulleit & Braulio Black Boulevardier",
-            pedigree: "Boulevardier Twist · Rocks Glass",
-            profile: "High-rye spice paired with mountain pine amaro & Turin vermouth",
-            ingredients: "Bulleit 95 Rye · Braulio Amaro Alpino · Cocchi Vermouth di Torino · Orange Bitters",
-            glass: "rocks_cube",
-            botanical: "pine_bough"
+            pedigree: "Boulevardier & Black Manhattan Twist • Heavy Rocks Glass",
+            glass: "rocks",
+            botanical: "pine",
+            profile: "Spicy high-rye whiskey paired with resinous mountain pine amaro and rich Turin sweet vermouth over a large ice rock.",
+            ingredients: "Bulleit 95 Rye • Braulio Amaro Alpino • Cocchi Vermouth di Torino • Orange Bitters"
           },
           {
             num: "16",
+            name: "Lazy Inferno",
             goldStar: false,
             badges: ["heat"],
-            name: "Lazy Inferno",
-            pedigree: "Smoky Chili Mezcal Negroni Twist · Rocks Glass",
-            profile: "Campfire espadín smoke, bitter gentian & roasted poblano heat",
-            ingredients: "Verde Mezcal · Campari · Cocchi Vermouth di Torino · Ancho Reyes Chili Liqueur · Habanero Essence",
-            glass: "rocks_cube",
-            botanical: "poblano_chili"
+            pedigree: "Smoky Chili Mezcal Negroni Twist • Heavy Rocks Glass",
+            glass: "rocks",
+            botanical: "chili",
+            profile: "Artisanal espadín smoke, bitter gentian, and sweet red vermouth warmed by roasted poblano chili and lingering habanero heat.",
+            ingredients: "Verde Mezcal • Campari • Cocchi Vermouth di Torino • Ancho Reyes Chili Liqueur • Habanero Extract"
           }
         ]
       },
       {
-        folio: "Folio V of V",
-        chapterLeft: "V. Bold, Smoky & Spicy Heavyweights",
-        chapterRight: "Peat Smoke, Wood Fire & Capsaicin",
-        leftCocktails: [
+        roman: "V",
+        chapter: "Chapter V • Bold, Smoky & Spicy Heavyweights",
+        subtitle: "Peat smoke, wood-fired aromatics, alpine roots & capsaicin",
+        leftDrinks: [
           {
             num: "17",
+            name: "The Trinidad Smoke Old Fashioned",
             goldStar: false,
             badges: ["heat"],
-            name: "The Trinidad Smoke Old Fashioned",
-            pedigree: "Old Fashioned Twist · Rocks Glass",
-            profile: "Rye pepper, clove & allspice bark backlit by Islay peat & chili",
-            ingredients: "Bulleit 95 Rye · Amaro di Angostura · Lagavulin 16 Islay Single Malt · Maple Syrup · Orange Bitters · Habanero Essence",
-            glass: "rocks_cube",
-            botanical: "rye_stalks"
+            pedigree: "Classic Old Fashioned Twist • Heavy Rocks Glass",
+            glass: "rocks",
+            botanical: "rye",
+            profile: "High-rye pepper layered with clove, allspice, and bitter bark, backlit by Islay peat smoke and a spicy habanero finish.",
+            ingredients: "Bulleit 95 Rye • Amaro di Angostura • Lagavulin 16 Scotch • Maple Syrup • Orange Bitters • Habanero Extract"
           },
           {
             num: "18",
+            name: "The Cherry Bark Old Fashioned",
             goldStar: false,
             badges: ["smoke", "heat"],
-            name: "The Cherry Bark Old Fashioned",
-            pedigree: "Smoker Showcase · Smoked Rocks Glass",
-            profile: "Velvety Spanish solera brandy & bitters under cherry wood smoke",
-            ingredients: "Torres 10 Gran Reserva Brandy · Amaro di Angostura · Cynar Artichoke Amaro · Cherry Wood Smoke",
+            pedigree: "Brandy Old Fashioned Twist • Cherry Wood Smoked Rocks Glass",
             glass: "rocks_smoked",
-            botanical: "cherry_wood_fruit"
+            botanical: "cherry",
+            profile: "Velvety Spanish Solera brandy, baking spices, and artichoke bitterness served under an aromatic cloud of cherry wood smoke.",
+            ingredients: "Torres 10 Gran Reserva Brandy • Amaro di Angostura • Cynar • Habanero Extract • Cherry Wood Smoke"
           }
         ],
-        rightCocktails: [
+        rightDrinks: [
           {
             num: "19",
+            name: "The Peated Rye Sazerac",
             goldStar: false,
             badges: [],
-            name: "The Peated Rye Sazerac",
-            pedigree: "1850s New Orleans Twist · Rocks Glass",
-            profile: "Fiery rye anchored by Islay peat smoke, bitters & black ouzo wash",
-            ingredients: "Bulleit 95 Rye · Lagavulin 16 Islay Single Malt · Peychaud's & Angostura Bitters · Brettos Black Ouzo Rinse",
-            glass: "rocks_cube",
-            botanical: "star_anise"
+            pedigree: "1850s New Orleans Sazerac Twist • Heavy Rocks Glass",
+            glass: "rocks",
+            botanical: "anise",
+            profile: "Fiery rye whiskey anchored by medicinal Islay peat smoke, creole bitters, and an aromatic black ouzo glass rinse.",
+            ingredients: "Bulleit 95 Rye • Lagavulin 16 Scotch • Brettos Ouzo Black Rinse • Peychaud’s & Angostura Bitters"
           },
           {
             num: "20",
+            name: "Inferno Oaxaqueño",
             goldStar: false,
             badges: ["heat"],
-            name: "Inferno Oaxaqueño",
-            pedigree: "Original Smoky-Bitter Daisy · Stepped Margarita Coupette",
-            profile: "Artisanal mezcal smoke, Campari bitterness, alpine herbs & lime",
-            ingredients: "Verde Mezcal · Campari · Green Chartreuse · Fresh Lime Juice · Habanero Essence",
-            glass: "margarita_stepped",
-            botanical: "habanero_pepper"
+            pedigree: "House Original Smoky-Bitter Daisy • Heavy Rocks Glass",
+            glass: "rocks",
+            botanical: "habanero",
+            profile: "Campfire mezcal smoke and assertive Campari bitterness balanced by alpine Chartreuse, tart lime, and habanero heat.",
+            ingredients: "Verde Mezcal • Campari • Green Chartreuse • Fresh Lime • Habanero Extract"
           }
         ]
       }
     ];
 
     // =========================================================================
-    // 4. PAGE HTML BUILDERS
-    // =========================================================================
-    const ELEMENT_BADGE_MAP = {
-      foam: `<span class="element-badge foam" title="Velvet Botanical Root Foam">☁</span>`,
-      smoke: `<span class="element-badge smoke" title="Cherry-Wood Smoked Showcase">♨</span>`,
-      heat: `<span class="element-badge heat" title="Habanero Capsaicin Heat">🔥</span>`
-    };
-
-    function buildCocktailSlotHTML(drink) {
-      const starBadge = drink.goldStar
-        ? `<span class="gold-star-foil" title="Gold Star House Specialty">★</span>`
-        : "";
-
-      const inlineBadges = (drink.badges || [])
-        .map(key => ELEMENT_BADGE_MAP[key] || "")
-        .join("");
-
-      return `
-        <article class="cocktail-slot">
-          <div class="min-h-0">
-            <div class="flex items-start justify-between gap-2">
-              <div class="min-w-0 flex-1">
-                <div class="drink-serial">No. ${drink.num}${starBadge}</div>
-                <h2 class="drink-name">${drink.name}${inlineBadges}</h2>
-                <p class="drink-pedigree">${drink.pedigree}</p>
-              </div>
-              <div class="glass-engraving-box">
-                ${GLASS_SVGS[drink.glass] || ""}
-              </div>
-            </div>
-
-            <div class="relative z-10">
-              <div class="drink-section-label">Flavor Profile</div>
-              <p class="drink-profile-text">${drink.profile}</p>
-
-              <div class="drink-section-label">Main Ingredients</div>
-              <p class="drink-ingredients-text">${drink.ingredients}</p>
-            </div>
-          </div>
-
-          <div class="botanical-etching" aria-hidden="true">
-            ${BOTANICAL_SVGS[drink.botanical] || ""}
-          </div>
-        </article>
-      `;
-    }
-
-    function buildPageHTML(spreadIndex, side) {
-      const spread = SPREADS[spreadIndex];
-      const isLeft = side === "left";
-      const cocktails = isLeft ? spread.leftCocktails : spread.rightCocktails;
-      const headerHTML = isLeft ? spread.chapterLeft : spread.chapterRight;
-      const hintText = isLeft
-        ? (spreadIndex > 0 ? "‹ Prev" : "‹ Close")
-        : (spreadIndex < SPREADS.length - 1 ? "Next ›" : "Finis");
-
-      const footerLeft = (spreadIndex === 0 && isLeft)
-        ? `<span class="ex-libris-plate">Ex Libris &mdash; Private Home Bar &middot; XIII Nov MMXXVI</span>`
-        : `<span class="font-cormorant italic truncate">${isLeft ? "The House Apothecary &amp; Evening Bar Ledger" : "★ Gold Star &middot; ☁ Foam &middot; ♨ Smoked &middot; 🔥 Habanero"}</span>`;
-
-      return `
-        <div class="page-border-box">
-          <header class="page-running-header">
-            <span class="chapter-title-text">${headerHTML}</span>
-            <span class="folio-badge-text">${spread.folio}</span>
-          </header>
-          <div class="page-cocktails-stack">
-            ${cocktails.map(buildCocktailSlotHTML).join("")}
-          </div>
-        </div>
-
-        <footer class="page-folio-footer">
-          ${footerLeft}
-          <span class="font-cinzel tracking-[0.12em] text-[#761f1c]/85 uppercase flex-shrink-0">
-            ${hintText}
-          </span>
-        </footer>
-      `;
-    }
-
-    // =========================================================================
-    // 5. WEB AUDIO SOFT PAPER-RUSTLE SOUND
-    // =========================================================================
-    let soundEnabled = true;
-    let audioCtx = null;
-    const soundToggleBtn = document.getElementById("soundToggleBtn");
-    const soundIcon = document.getElementById("soundIcon");
-    const soundLabel = document.getElementById("soundLabel");
-
-    function playPaperRustle(isHeavyCover = false) {
-      if (!soundEnabled) return;
-      try {
-        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-        if (!AudioContextClass) return;
-        if (!audioCtx) audioCtx = new AudioContextClass();
-        if (audioCtx.state === "suspended") audioCtx.resume();
-
-        const duration = isHeavyCover ? 0.38 : 0.25;
-        const sampleRate = audioCtx.sampleRate;
-        const frameCount = Math.floor(sampleRate * duration);
-        const buffer = audioCtx.createBuffer(1, frameCount, sampleRate);
-        const data = buffer.getChannelData(0);
-
-        let b0 = 0, b1 = 0, b2 = 0;
-        for (let i = 0; i < frameCount; i++) {
-          const white = Math.random() * 2 - 1;
-          b0 = 0.99765 * b0 + white * 0.099046;
-          b1 = 0.96300 * b1 + white * 0.2965164;
-          b2 = 0.57000 * b2 + white * 1.0526913;
-          data[i] = (b0 + b1 + b2 + white * 0.1848) * 0.08;
-        }
-
-        const source = audioCtx.createBufferSource();
-        source.buffer = buffer;
-
-        const filter = audioCtx.createBiquadFilter();
-        filter.type = "bandpass";
-        filter.frequency.setValueAtTime(isHeavyCover ? 650 : 1250, audioCtx.currentTime);
-        filter.frequency.exponentialRampToValueAtTime(isHeavyCover ? 1100 : 2100, audioCtx.currentTime + duration);
-        filter.Q.value = 1.4;
-
-        const gain = audioCtx.createGain();
-        const peak = isHeavyCover ? 0.15 : 0.10;
-        gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
-        gain.gain.linearRampToValueAtTime(peak, audioCtx.currentTime + duration * 0.25);
-        gain.gain.exponentialRampToValueAtTime(0.0008, audioCtx.currentTime + duration);
-
-        source.connect(filter);
-        filter.connect(gain);
-        gain.connect(audioCtx.destination);
-        source.start();
-      } catch (e) {}
-    }
-
-    soundToggleBtn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      soundEnabled = !soundEnabled;
-      soundIcon.textContent = soundEnabled ? "🔊" : "🔇";
-      soundLabel.textContent = soundEnabled ? "Page Rustle: On" : "Page Rustle: Off";
-      if (soundEnabled) playPaperRustle(false);
-    });
-
-    // =========================================================================
-    // 6. STATE & 3D BOOK OPENING / PAGE-TURNING ENGINE
+    // 3. CORE STATE & DOM REFERENCES
     // =========================================================================
     let isCoverOpen = false;
     let currentSpreadIndex = 0;
     let isFlipping = false;
+    let soundEnabled = true;
+    let audioCtx = null;
 
     const portraitOverlay = document.getElementById("portraitOverlay");
     const dismissPortraitBtn = document.getElementById("dismissPortraitBtn");
@@ -1905,6 +1637,347 @@
     const leftCornerCurl = document.getElementById("leftCornerCurl");
     const rightCornerCurl = document.getElementById("rightCornerCurl");
     const silkRibbon = document.getElementById("silkRibbon");
+    const soundToggleBtn = document.getElementById("soundToggleBtn");
+    const soundIcon = document.getElementById("soundIcon");
+    const soundLabel = document.getElementById("soundLabel");
+
+    // Fullscreen & Zoom Controls
+    const viewportStage = document.getElementById("viewportStage");
+    const bookZoomWrapper = document.getElementById("bookZoomWrapper");
+    const fullscreenBtn = document.getElementById("fullscreenBtn");
+    const fullscreenIcon = document.getElementById("fullscreenIcon");
+    const fullscreenLabel = document.getElementById("fullscreenLabel");
+    const resetZoomBtn = document.getElementById("resetZoomBtn");
+    const iosFullscreenToast = document.getElementById("iosFullscreenToast");
+    const closeToastBtn = document.getElementById("closeToastBtn");
+
+    // =========================================================================
+    // 4. WEB AUDIO SYNTHESIZED PARCHMENT RUSTLE SOUND
+    // =========================================================================
+    function playPaperRustle(isHeavyCover = false) {
+      if (!soundEnabled) return;
+      try {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContextClass) return;
+        if (!audioCtx) audioCtx = new AudioContextClass();
+        if (audioCtx.state === "suspended") audioCtx.resume();
+
+        const duration = isHeavyCover ? 0.34 : 0.24;
+        const sampleRate = audioCtx.sampleRate;
+        const frameCount = Math.floor(sampleRate * duration);
+        const buffer = audioCtx.createBuffer(1, frameCount, sampleRate);
+        const data = buffer.getChannelData(0);
+
+        for (let i = 0; i < frameCount; i++) {
+          const t = i / frameCount;
+          const env = Math.sin(Math.PI * Math.pow(t, 0.72));
+          data[i] = (Math.random() * 2 - 1) * env * (isHeavyCover ? 0.22 : 0.16);
+        }
+
+        const noise = audioCtx.createBufferSource();
+        noise.buffer = buffer;
+
+        const filter = audioCtx.createBiquadFilter();
+        filter.type = "bandpass";
+        filter.frequency.setValueAtTime(isHeavyCover ? 680 : 1250, audioCtx.currentTime);
+        filter.frequency.exponentialRampToValueAtTime(isHeavyCover ? 1450 : 2600, audioCtx.currentTime + duration);
+        filter.Q.value = 1.4;
+
+        const gain = audioCtx.createGain();
+        gain.gain.setValueAtTime(0.01, audioCtx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.32, audioCtx.currentTime + duration * 0.3);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+
+        noise.connect(filter);
+        filter.connect(gain);
+        gain.connect(audioCtx.destination);
+        noise.start();
+      } catch (e) {}
+    }
+
+    soundToggleBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      soundEnabled = !soundEnabled;
+      soundIcon.textContent = soundEnabled ? "🔊" : "🔇";
+      soundLabel.textContent = soundEnabled ? "Page Rustle: On" : "Page Rustle: Off";
+      if (soundEnabled) playPaperRustle(false);
+    });
+
+    // =========================================================================
+    // 5. PAGE & COCKTAIL ENTRY HTML BUILDER
+    // =========================================================================
+    function buildBadgesHTML(drink) {
+      let html = "";
+      if (drink.goldStar) {
+        html += `<span class="gold-star-foil" title="House Gold Star Specialty">★</span>`;
+      }
+      if (Array.isArray(drink.badges)) {
+        drink.badges.forEach((b) => {
+          if (b === "foam") html += `<span class="element-badge foam" title="Botanical Root Foam">☁</span>`;
+          if (b === "smoke") html += `<span class="element-badge smoke" title="Cherry Wood Smoke">♨</span>`;
+          if (b === "heat") html += `<span class="element-badge heat" title="Habanero Heat">🔥</span>`;
+        });
+      }
+      return html;
+    }
+
+    function buildCocktailSlotHTML(drink) {
+      return `
+        <article class="cocktail-slot">
+          <div>
+            <div class="flex items-start justify-between gap-2">
+              <div class="min-w-0 flex-1">
+                <div class="drink-serial">No. ${drink.num}</div>
+                <h2 class="drink-name">${drink.name}${buildBadgesHTML(drink)}</h2>
+                <p class="drink-pedigree">${drink.pedigree}</p>
+              </div>
+              ${GLASS_SVGS[drink.glass] || ""}
+            </div>
+
+            <div class="relative z-10">
+              <div class="drink-section-label">Flavor Profile</div>
+              <p class="drink-profile-text">${drink.profile}</p>
+
+              <div class="drink-section-label">Main Ingredients</div>
+              <p class="drink-ingredients-text">${drink.ingredients}</p>
+            </div>
+          </div>
+          ${BOTANICAL_SVGS[drink.botanical] || ""}
+        </article>
+      `;
+    }
+
+    function buildPageHTML(spreadIndex, side) {
+      const spread = SPREADS[spreadIndex];
+      const drinks = side === "left" ? spread.leftDrinks : spread.rightDrinks;
+
+      const footerLeft = side === "left"
+        ? (spreadIndex === 0
+            ? `<span class="ex-libris-plate">Ex Libris &mdash; Private Home Bar &bull; XIII Nov MMXXVI</span>`
+            : `<span>Cocktails at Home &mdash; Private Compendium</span>`)
+        : `<span>☁ Foam &nbsp;&bull;&nbsp; ♨ Smoke &nbsp;&bull;&nbsp; 🔥 Heat</span>`;
+
+      const footerRight = side === "left"
+        ? `<span>${spread.subtitle}</span>`
+        : `<span class="font-cinzel font-bold text-[#761f1c]">Folio ${spread.roman} of V</span>`;
+
+      return `
+        <div class="page-border-box">
+          <header class="page-running-header">
+            <span class="chapter-title-text">${spread.chapter}</span>
+            <span class="folio-badge-text">Folio ${spread.roman}</span>
+          </header>
+
+          <div class="page-cocktails-stack">
+            ${drinks.map(buildCocktailSlotHTML).join("")}
+          </div>
+
+          <footer class="page-folio-footer">
+            ${footerLeft}
+            ${footerRight}
+          </footer>
+        </div>
+      `;
+    }
+
+    // =========================================================================
+    // 6. FULL-SCREEN API & IOS SAFARI TOAST HANDLER
+    // =========================================================================
+    // 6B. FULL-SCREEN API & IOS SAFARI TOAST HANDLER
+    // =========================================================================
+    let toastTimer = null;
+
+    function isFullscreenActive() {
+      return !!(
+        document.fullscreenElement ||
+        document.webkitFullscreenElement ||
+        document.mozFullScreenElement ||
+        document.msFullscreenElement
+      );
+    }
+
+    function supportsNativeFullscreen() {
+      const docEl = document.documentElement;
+      return !!(
+        (document.fullscreenEnabled || document.webkitFullscreenEnabled) &&
+        (docEl.requestFullscreen || docEl.webkitRequestFullscreen)
+      );
+    }
+
+    function showIosFullscreenToast() {
+      iosFullscreenToast.classList.add("show");
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        iosFullscreenToast.classList.remove("show");
+      }, 6500);
+    }
+
+    closeToastBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      iosFullscreenToast.classList.remove("show");
+      if (toastTimer) clearTimeout(toastTimer);
+    });
+
+    function updateFullscreenButtonUI() {
+      const active = isFullscreenActive();
+      fullscreenIcon.textContent = active ? "✕" : "⛶";
+      fullscreenLabel.textContent = active ? "Exit Full" : "Full Screen";
+    }
+
+    async function requestBookFullscreen(silentIfUnsupported = false) {
+      if (isFullscreenActive()) return;
+      const docEl = document.documentElement;
+      try {
+        if (docEl.requestFullscreen) {
+          await docEl.requestFullscreen({ navigationUI: "hide" });
+        } else if (docEl.webkitRequestFullscreen) {
+          docEl.webkitRequestFullscreen();
+        } else if (!silentIfUnsupported) {
+          showIosFullscreenToast();
+        }
+      } catch (err) {
+        if (!silentIfUnsupported) {
+          showIosFullscreenToast();
+        }
+      }
+      updateFullscreenButtonUI();
+    }
+
+    async function exitBookFullscreen() {
+      try {
+        if (document.exitFullscreen) {
+          await document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) {
+          document.webkitExitFullscreen();
+        }
+      } catch (err) {}
+      updateFullscreenButtonUI();
+    }
+
+    fullscreenBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      if (isFullscreenActive()) {
+        exitBookFullscreen();
+      } else if (!supportsNativeFullscreen()) {
+        showIosFullscreenToast();
+      } else {
+        requestBookFullscreen(false);
+      }
+    });
+
+    document.addEventListener("fullscreenchange", updateFullscreenButtonUI);
+    document.addEventListener("webkitfullscreenchange", updateFullscreenButtonUI);
+
+    // =========================================================================
+    // 6C. TOUCHSCREEN PINCH-TO-ZOOM, PAN & DOUBLE-TAP ZOOM (1.0x - 2.6x)
+    // =========================================================================
+    const MIN_SCALE = 1.0;
+    const MAX_SCALE = 2.6;
+    const DOUBLE_TAP_SCALE = 1.85;
+
+    let currentScale = 1.0;
+    let translateX = 0;
+    let translateY = 0;
+
+    // Gesture tracking state
+    let isPinching = false;
+    let isPanning = false;
+    let pinchStartDist = 0;
+    let pinchStartScale = 1.0;
+    let pinchStartMidX = 0;
+    let pinchStartMidY = 0;
+    let pinchStartTx = 0;
+    let pinchStartTy = 0;
+
+    let panStartX = 0;
+    let panStartY = 0;
+    let panStartTx = 0;
+    let panStartTy = 0;
+    let hasDraggedBeyondThreshold = false;
+
+    let lastTapTime = 0;
+    let lastTapX = 0;
+    let lastTapY = 0;
+
+    function clampTranslation(tx, ty, scale) {
+      if (scale <= 1.01) {
+        return { x: 0, y: 0 };
+      }
+      const rect = viewportStage.getBoundingClientRect();
+      const maxOffsetX = ((rect.width * scale) - rect.width) * 0.52;
+      const maxOffsetY = ((rect.height * scale) - rect.height) * 0.52;
+      return {
+        x: Math.max(-maxOffsetX, Math.min(maxOffsetX, tx)),
+        y: Math.max(-maxOffsetY, Math.min(maxOffsetY, ty))
+      };
+    }
+
+    function applyZoomTransform(smooth = false) {
+      if (smooth) {
+        bookZoomWrapper.classList.add("zoom-smooth");
+      } else {
+        bookZoomWrapper.classList.remove("zoom-smooth");
+      }
+
+      if (currentScale <= 1.01) {
+        currentScale = 1.0;
+        translateX = 0;
+        translateY = 0;
+        resetZoomBtn.classList.remove("visible");
+      } else {
+        const clamped = clampTranslation(translateX, translateY, currentScale);
+        translateX = clamped.x;
+        translateY = clamped.y;
+        resetZoomBtn.classList.add("visible");
+      }
+
+      bookZoomWrapper.style.transform = `translate3d(${translateX}px, ${translateY}px, 0) scale(${currentScale})`;
+    }
+
+    function resetBookZoom(smooth = true) {
+      currentScale = 1.0;
+      translateX = 0;
+      translateY = 0;
+      applyZoomTransform(smooth);
+    }
+
+    function zoomAroundPoint(targetScale, clientX, clientY, smooth = true) {
+      const clampedScale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, targetScale));
+      if (clampedScale <= 1.02) {
+        resetBookZoom(smooth);
+        return;
+      }
+
+      const rect = viewportStage.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+
+      // Offset of focal point from viewport center
+      const focalX = clientX - centerX;
+      const focalY = clientY - centerY;
+
+      const ratio = clampedScale / currentScale;
+      translateX = focalX - (focalX - translateX) * ratio;
+      translateY = focalY - (focalY - translateY) * ratio;
+      currentScale = clampedScale;
+      applyZoomTransform(smooth);
+    }
+
+    resetZoomBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      resetBookZoom(true);
+    });
+
+    function getTouchDistance(t1, t2) {
+      return Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
+    }
+
+    function getTouchMidpoint(t1, t2) {
+      return {
+        x: (t1.clientX + t2.clientX) / 2,
+        y: (t1.clientY + t2.clientY) / 2
+      };
+    }
 
     dismissPortraitBtn.addEventListener("click", () => {
       portraitOverlay.classList.add("dismissed");
@@ -1938,6 +2011,12 @@
       if (isFlipping || isCoverOpen) return;
       isFlipping = true;
       playPaperRustle(true);
+
+      // Gently request native fullscreen on mobile devices when opening the ledger
+      const isMobileViewport = window.matchMedia("(max-width: 960px)").matches || ("ontouchstart" in window);
+      if (isMobileViewport && supportsNativeFullscreen() && !isFullscreenActive()) {
+        requestBookFullscreen(true);
+      }
 
       closedBookCover.classList.add("cover-opening-anim");
 
@@ -1977,7 +2056,7 @@
     }
 
     function turnToSpread(targetIndex) {
-      if (isFlipping || !isCoverOpen) return;
+      if (isFlipping || !isCoverOpen || currentScale > 1.05) return;
 
       if (targetIndex < 0) {
         closeLedgerCover();
@@ -2028,6 +2107,8 @@
     // =========================================================================
     // 7. INTERACTION LISTENERS (COVER CLICK, PAGE TAPS, KEYBOARD, TOUCH SWIPE)
     // =========================================================================
+    // 7. INTERACTION LISTENERS (COVER CLICK, PAGE TAPS, KEYBOARD, TOUCH ZOOM/SWIPE)
+    // =========================================================================
     closedBookCover.addEventListener("click", openLedgerCover);
     closedBookCover.addEventListener("keydown", (e) => {
       if (e.key === "Enter" || e.key === " " || e.key === "ArrowRight") {
@@ -2036,10 +2117,21 @@
       }
     });
 
-    leftClickTarget.addEventListener("click", () => turnToSpread(currentSpreadIndex - 1));
-    rightClickTarget.addEventListener("click", () => turnToSpread(currentSpreadIndex + 1));
+    leftClickTarget.addEventListener("click", () => {
+      if (currentScale > 1.05 || hasDraggedBeyondThreshold) return;
+      turnToSpread(currentSpreadIndex - 1);
+    });
+
+    rightClickTarget.addEventListener("click", () => {
+      if (currentScale > 1.05 || hasDraggedBeyondThreshold) return;
+      turnToSpread(currentSpreadIndex + 1);
+    });
 
     document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && currentScale > 1.05) {
+        resetBookZoom(true);
+        return;
+      }
       if (!isCoverOpen) {
         if (e.key === "ArrowRight" || e.key === "Enter" || e.key === " ") {
           e.preventDefault();
@@ -2054,19 +2146,123 @@
     let touchStartX = 0;
     let touchStartY = 0;
 
-    document.getElementById("viewportStage").addEventListener("touchstart", (e) => {
-      if (e.touches.length === 1) {
-        touchStartX = e.touches[0].clientX;
-        touchStartY = e.touches[0].clientY;
+    viewportStage.addEventListener("touchstart", (e) => {
+      // Ignore gestures starting on top floating control pills
+      if (e.target.closest("#fullscreenBtn, #resetZoomBtn, #soundToggleBtn")) return;
+
+      if (e.touches.length === 2) {
+        // Begin Two-Finger Pinch-to-Zoom
+        isPinching = true;
+        isPanning = false;
+        bookZoomWrapper.classList.remove("zoom-smooth");
+
+        pinchStartDist = getTouchDistance(e.touches[0], e.touches[1]);
+        pinchStartScale = currentScale;
+        const mid = getTouchMidpoint(e.touches[0], e.touches[1]);
+        pinchStartMidX = mid.x;
+        pinchStartMidY = mid.y;
+        pinchStartTx = translateX;
+        pinchStartTy = translateY;
+      } else if (e.touches.length === 1 && !isPinching) {
+        const touch = e.touches[0];
+        touchStartX = touch.clientX;
+        touchStartY = touch.clientY;
+        hasDraggedBeyondThreshold = false;
+
+        if (currentScale > 1.05) {
+          isPanning = true;
+          panStartX = touch.clientX;
+          panStartY = touch.clientY;
+          panStartTx = translateX;
+          panStartTy = translateY;
+          bookZoomWrapper.classList.remove("zoom-smooth");
+        }
       }
     }, { passive: true });
 
-    document.getElementById("viewportStage").addEventListener("touchend", (e) => {
-      if (e.changedTouches.length !== 1) return;
-      const dx = e.changedTouches[0].clientX - touchStartX;
-      const dy = e.changedTouches[0].clientY - touchStartY;
+    viewportStage.addEventListener("touchmove", (e) => {
+      if (isPinching && e.touches.length === 2) {
+        e.preventDefault();
+        const dist = getTouchDistance(e.touches[0], e.touches[1]);
+        const mid = getTouchMidpoint(e.touches[0], e.touches[1]);
 
-      if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.15) {
+        const rawScale = pinchStartScale * (dist / (pinchStartDist || 1));
+        const nextScale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, rawScale));
+
+        const rect = viewportStage.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+
+        const focalX = pinchStartMidX - centerX;
+        const focalY = pinchStartMidY - centerY;
+        const ratio = nextScale / pinchStartScale;
+
+        translateX = focalX - (focalX - pinchStartTx) * ratio + (mid.x - pinchStartMidX);
+        translateY = focalY - (focalY - pinchStartTy) * ratio + (mid.y - pinchStartMidY);
+        currentScale = nextScale;
+        applyZoomTransform(false);
+      } else if (isPanning && e.touches.length === 1 && currentScale > 1.05) {
+        e.preventDefault();
+        const dx = e.touches[0].clientX - panStartX;
+        const dy = e.touches[0].clientY - panStartY;
+        if (Math.hypot(dx, dy) > 6) {
+          hasDraggedBeyondThreshold = true;
+        }
+        translateX = panStartTx + dx;
+        translateY = panStartTy + dy;
+        applyZoomTransform(false);
+      }
+    }, { passive: false });
+
+    viewportStage.addEventListener("touchend", (e) => {
+      if (e.target.closest("#fullscreenBtn, #resetZoomBtn, #soundToggleBtn")) return;
+
+      if (isPinching) {
+        if (e.touches.length < 2) {
+          isPinching = false;
+          if (currentScale <= 1.05) {
+            resetBookZoom(true);
+          } else {
+            applyZoomTransform(true);
+          }
+        }
+        return;
+      }
+
+      if (e.changedTouches.length !== 1) return;
+      const touch = e.changedTouches[0];
+      const dx = touch.clientX - touchStartX;
+      const dy = touch.clientY - touchStartY;
+      const movedDist = Math.hypot(dx, dy);
+
+      if (isPanning) {
+        isPanning = false;
+        applyZoomTransform(true);
+      }
+
+      // Check Double-Tap to Zoom (when open book is displayed and tap didn't drag)
+      if (isCoverOpen && movedDist < 14) {
+        const now = Date.now();
+        const dt = now - lastTapTime;
+        const tapDist = Math.hypot(touch.clientX - lastTapX, touch.clientY - lastTapY);
+
+        if (dt > 0 && dt < 310 && tapDist < 34) {
+          e.preventDefault();
+          lastTapTime = 0;
+          if (currentScale > 1.05) {
+            resetBookZoom(true);
+          } else {
+            zoomAroundPoint(DOUBLE_TAP_SCALE, touch.clientX, touch.clientY, true);
+          }
+          return;
+        }
+        lastTapTime = now;
+        lastTapX = touch.clientX;
+        lastTapY = touch.clientY;
+      }
+
+      // Only allow horizontal swipe page-flipping when NOT zoomed in (scale <= 1.05)
+      if (currentScale <= 1.05 && Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.15) {
         if (!isCoverOpen) {
           if (dx < 0) openLedgerCover();
         } else {
@@ -2074,7 +2270,14 @@
           else turnToSpread(currentSpreadIndex - 1);
         }
       }
-    }, { passive: true });
+    }, { passive: false });
+
+    // Re-clamp zoom bounds if device rotates or resizes
+    window.addEventListener("resize", () => {
+      if (currentScale > 1.05) {
+        applyZoomTransform(false);
+      }
+    });
   </script>
 </body>
 </html>

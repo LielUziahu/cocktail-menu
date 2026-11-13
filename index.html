@@ -98,7 +98,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: clamp(6px, 1.5vh, 18px) clamp(8px, 1.8vw, 24px);
+      padding: clamp(4px, 1vh, 12px) clamp(6px, 1vw, 14px);
       position: relative;
       z-index: 2;
       perspective: 2600px;
@@ -119,6 +119,55 @@
 
     #bookZoomWrapper.zoom-smooth {
       transition: transform 0.28s cubic-bezier(0.22, 0.85, 0.28, 1);
+    }
+
+    /* Portrait Orientation Prompt Overlay (Only visible in portrait on phones) */
+    #portraitOverlay {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: rgba(12, 6, 4, 0.94);
+      backdrop-filter: blur(6px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    @media (orientation: portrait) and (max-width: 767px) {
+      #portraitOverlay:not(.dismissed) {
+        display: flex;
+      }
+    }
+
+    .portrait-card {
+      width: 100%;
+      max-width: 340px;
+      border-radius: 16px;
+      padding: 10px;
+      background: linear-gradient(145deg, #2b1711 0%, #170c09 100%);
+      border: 2px solid rgba(223, 186, 107, 0.65);
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.9);
+      text-align: center;
+    }
+
+    .portrait-card-inner {
+      border: 2px double var(--brass);
+      border-radius: 10px;
+      padding: 22px 18px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .rotate-phone-anim {
+      animation: rotatePhoneHint 2.6s ease-in-out infinite;
+    }
+
+    @keyframes rotatePhoneHint {
+      0%, 20% { transform: rotate(0deg); }
+      55%, 80% { transform: rotate(-90deg); }
+      100% { transform: rotate(0deg); }
     }
 
     /* =======================================================================
@@ -243,9 +292,8 @@
        ======================================================================= */
     #closedBookCover {
       height: 100%;
-      max-height: 840px;
-      aspect-ratio: 0.78 / 1;
-      max-width: 92%;
+      width: min(72vw, 560px);
+      max-height: 96%;
       border-radius: 8px 20px 20px 8px;
       position: relative;
       cursor: pointer;
@@ -429,15 +477,13 @@
     }
 
     /* =======================================================================
-       OPEN TWO-PAGE LEDGER BOOK (FLUID 100% FIT-TO-SCREEN)
+       OPEN TWO-PAGE LEDGER BOOK (FULL-WIDTH 100% FIT-TO-SCREEN)
        ======================================================================= */
     .leather-binding {
       width: 100%;
-      max-width: 1380px;
       height: 100%;
-      max-height: 880px;
-      border-radius: clamp(12px, 2vh, 20px);
-      padding: clamp(7px, 1.4vh, 15px) clamp(9px, 1.3vw, 18px);
+      border-radius: clamp(10px, 1.8vh, 18px);
+      padding: clamp(6px, 1.2vh, 14px) clamp(8px, 1vw, 16px);
       background:
         radial-gradient(circle at 50% 0%, rgba(181, 141, 61, 0.25), transparent 65%),
         radial-gradient(circle at 50% 100%, rgba(0, 0, 0, 0.55), transparent 70%),
